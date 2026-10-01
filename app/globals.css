@@ -1,0 +1,945 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  color: #0B63B6;
+}
+
+a:hover {
+  color: #084C8C;
+}
+
+summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] .faq-plus {
+  transform: rotate(45deg);
+}
+
+.faq-plus {
+  transition: transform 0.2s ease;
+}
+
+/* Reset default figure/blockquote margins where needed */
+figure {
+  margin: 0;
+}
+
+blockquote {
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ENTRANCE ANIMATIONS
+   Triggered by the <Reveal> component via IntersectionObserver.
+   ══════════════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children — each direct child animates in sequence. */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-stagger.is-visible > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 90ms; }
+.reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 180ms; }
+.reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 270ms; }
+.reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 360ms; }
+.reveal-stagger.is-visible > *:nth-child(6) { transition-delay: 450ms; }
+.reveal-stagger.is-visible > *:nth-child(7) { transition-delay: 540ms; }
+.reveal-stagger.is-visible > *:nth-child(8) { transition-delay: 630ms; }
+.reveal-stagger.is-visible > *:nth-child(n + 9) { transition-delay: 720ms; }
+
+/* ══════════════════════════════════════════════════════════════
+   HOVER EFFECTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* Reusable: lift + shadow on hover (cards, tiles). */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease;
+  will-change: transform;
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px -16px rgba(10, 37, 64, 0.28);
+}
+
+/* Reusable: primary / filled button hover. */
+.btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease,
+              background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -8px rgba(10, 37, 64, 0.4);
+  filter: brightness(1.06);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px -4px rgba(10, 37, 64, 0.35);
+}
+
+/* Outline / ghost button hover (e.g. "View Services" on dark hero). */
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Nav links: animated underline. */
+.nav-link {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* Footer link hover. */
+.footer-link {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #FFFFFF !important;
+  transform: translateX(4px);
+}
+
+/* Service/issue cards: icon pop on hover. */
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease,
+              background-color 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 44px -18px rgba(10, 37, 64, 0.3);
+  border-color: #0B63B6;
+}
+
+.card-hover:hover .card-icon {
+  transform: scale(1.12) rotate(-4deg);
+}
+
+.card-icon {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Generic transition helper for icon buttons. */
+.icon-pop {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.icon-pop:hover {
+  transform: scale(1.12);
+}
+
+/* FAQ item: subtle border + shadow lift on hover. */
+.faq-item {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.faq-item:hover {
+  border-color: #0B63B6;
+  box-shadow: 0 12px 30px -16px rgba(10, 37, 64, 0.28);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESSIBILITY: respect reduced-motion preferences.
+   ══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .hover-lift,
+  .btn,
+  .btn-ghost,
+  .nav-link,
+  .nav-link::after,
+  .footer-link,
+  .card-hover,
+  .card-hover:hover,
+  .card-icon,
+  .icon-pop {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Spinner used by async buttons (e.g. hero form submit). */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.icon-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-spin {
+    animation: none;
+  }
+}
+
+/* ── Hero layout ───────────────────────────────────────────────
+   Left (text) 60% / right (form) 40%. Stacks on narrow screens. */
+.hero-grid {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+}
+
+@media (max-width: 860px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE — tablet & mobile
+   Base styles (inline) are desktop-first; these queries shrink
+   spacing, type and reflow grids on smaller screens.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Section vertical rhythm — tighter on small screens. */
+.section-pad {
+  padding-top: 104px;
+  padding-bottom: 104px;
+}
+
+/* Hero has its own asymmetric padding. */
+.hero-section {
+  padding-top: 72px;
+  padding-bottom: 150px;
+}
+
+@media (max-width: 900px) {
+  .section-pad {
+    padding-top: 72px !important;
+    padding-bottom: 72px !important;
+  }
+
+  .hero-section {
+    padding-top: 48px !important;
+    padding-bottom: 96px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+
+  .section-pad {
+    padding-top: 52px !important;
+    padding-bottom: 52px !important;
+  }
+
+  .hero-section {
+    padding-top: 36px !important;
+    padding-bottom: 72px !important;
+  }
+
+  /* Global container gutters: 24px → 18px on phones. */
+  .container-pad {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  /* Headings: scale down one notch. */
+  .h1 {
+    font-size: clamp(30px, 8vw, 40px) !important;
+  }
+
+  .h2 {
+    font-size: clamp(24px, 6.5vw, 32px) !important;
+  }
+
+  /* Buttons: full-width friendly & slightly shorter. */
+  .btn {
+    min-height: 46px !important;
+    font-size: 15px !important;
+  }
+
+  .btn-block-mobile {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Cards: reduce inner padding. */
+  .card-pad {
+    padding: 22px !important;
+  }
+
+  /* Feature cards that overlap the hero: less negative pull. */
+  .feature-overlap {
+    margin-top: -56px !important;
+  }
+}
+
+/* Grid reflow helpers: force single column on narrow screens. */
+@media (max-width: 640px) {
+  .grid-1-mobile {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Feature/issue/testimonial grids: relax min column width. */
+@media (max-width: 900px) {
+  .grid-relax {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  }
+}
+
+/* ── Component-specific responsive tweaks ─────────────────────── */
+@media (max-width: 900px) {
+  .why-grid,
+  .faq-grid,
+  .cta-grid {
+    gap: 36px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Hero form column sits below text; tighten gap. */
+  .hero-grid {
+    gap: 32px !important;
+  }
+
+  /* Feature cards overlapping hero: reduce internal padding. */
+  .feature-overlap > div {
+    padding: 22px !important;
+  }
+
+  /* Issues grid: 2 cards per row on mobile. */
+  .issues-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* Issue card icon header: shorter, smaller icon + tag. */
+  .issue-head {
+    height: 84px !important;
+    padding: 0 12px !important;
+  }
+
+  .issue-head .card-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Small tag pill inside the card head. */
+  .issue-head > span:last-child {
+    padding: 3px 8px !important;
+    font-size: 10px !important;
+  }
+
+  /* Issue card body: tighter padding + smaller type. */
+  .issue-body {
+    padding: 14px 14px 16px !important;
+    gap: 7px !important;
+  }
+
+  .issue-body h3 {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+  }
+
+  .issue-body p {
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+  }
+
+  /* "Book this fix" link: smaller. */
+  .issue-body a {
+    font-size: 12.5px !important;
+    min-height: 32px !important;
+    gap: 5px !important;
+  }
+
+  .issue-body a svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* Doorstep band: tighter inner padding. */
+  .doorstep-pad {
+    padding: 26px 20px !important;
+  }
+
+  /* Footer: tighter vertical padding. */
+  .footer-pad {
+    padding: 36px 18px 20px !important;
+  }
+
+  /* FAQ items: slightly tighter. */
+  .faq-item {
+    padding: 0 16px !important;
+  }
+
+  /* Testimonial/process card inner padding. */
+  .card-pad,
+  .testimonial-pad {
+    padding: 22px !important;
+  }
+
+  /* WhyChooseUs floating 100% badge: smaller. */
+  .why-badge {
+    padding: 16px 18px !important;
+    max-width: 190px !important;
+    right: 0 !important;
+    bottom: -16px !important;
+  }
+
+  .why-badge .why-badge-num {
+    font-size: 28px !important;
+  }
+}
+
+/* ── Header / TopBar responsive ───────────────────────────────── */
+@media (max-width: 640px) {
+  .header-inner {
+    padding: 12px 18px !important;
+    gap: 12px !important;
+  }
+
+  /* Nav links are hidden on mobile; the top bar + CTA remain. */
+  .header-nav {
+    display: none !important;
+  }
+
+  /* TopBar: stack the two lines neatly. */
+  .topbar-inner {
+    padding: 8px 18px !important;
+    gap: 4px 12px !important;
+    font-size: 12.5px !important;
+    justify-content: center !important;
+    text-align: center;
+  }
+}
+
+/* ── Hero "We service" brands — mobile: label on its own line, */
+/*    brand pills centered underneath. */
+@media (max-width: 640px) {
+  .brands-row {
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Force the label onto its own full-width line so the pills
+     wrap onto the rows below it. */
+  .brands-label {
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+
+/* ── Hero form — mobile: minimize overall height ──────────────── */
+@media (max-width: 640px) {
+  .hero-form {
+    padding: 16px !important;
+    gap: 9px !important;
+    border-radius: 14px !important;
+  }
+
+  /* Hide the helper paragraph to save vertical space. */
+  .hero-form-head p {
+    display: none;
+  }
+
+  .hero-form-head h3 {
+    font-size: 17px !important;
+  }
+
+  /* Name/phone stay side-by-side but with a tighter gap. */
+  .hero-form-row {
+    gap: 9px !important;
+  }
+
+  /* Shorter inputs. */
+  .form-field {
+    min-height: 36px !important;
+    padding: 7px 10px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Labels: smaller + closer to the field. */
+  .hero-form label {
+    font-size: 12px !important;
+    margin-bottom: 3px !important;
+  }
+
+  /* Compact textarea. */
+  .form-textarea {
+    min-height: 54px !important;
+  }
+
+  /* Shorter submit button. */
+  .hero-form button[type='submit'] {
+    min-height: 40px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ── WhyChooseUs features — mobile: force a 2×2 grid ──────────── */
+@media (max-width: 640px) {
+  .why-features {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px 14px !important;
+  }
+
+  .why-features > div {
+    gap: 9px !important;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .why-features > div > span:first-child {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
+
+/* ── WhyChooseUs CTA — mobile: center button, hide call link ──── */
+@media (max-width: 640px) {
+  .why-cta {
+    justify-content: center !important;
+    text-align: center;
+  }
+
+  .why-call-link {
+    display: none !important;
+  }
+}
+
+/* ── CommonIssues heading — mobile: smaller & tighter ─────────── */
+@media (max-width: 640px) {
+  .issues-head {
+    gap: 10px !important;
+  }
+
+  .issues-head h2 {
+    font-size: 24px !important;
+  }
+
+  .issues-head > div:first-child {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .issues-wrap {
+    gap: 28px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TESTIMONIAL SLIDER
+   ══════════════════════════════════════════════════════════════ */
+.tslider {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.tslider-viewport {
+  overflow: hidden;
+  border-radius: 16px;
+  outline: none;
+}
+
+.tslider-viewport:focus-visible {
+  box-shadow: 0 0 0 3px rgba(11, 99, 182, 0.35);
+}
+
+.tslider-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.tslider-slide {
+  padding: 6px 12px;
+  box-sizing: border-box;
+}
+
+/* Controls */
+.tslider-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.tslider-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #D5E3EF;
+  background: #FFFFFF;
+  color: #0A2540;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, background-color 0.2s ease,
+              border-color 0.2s ease, color 0.2s ease;
+}
+
+.tslider-arrow:hover {
+  background: #0B63B6;
+  border-color: #0B63B6;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.tslider-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tslider-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: #C7DAEA;
+  cursor: pointer;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.tslider-dot.is-active {
+  width: 26px;
+  background: #0B63B6;
+}
+
+@media (max-width: 640px) {
+  .tslider-slide {
+    padding: 4px 6px;
+  }
+
+  .tslider {
+    gap: 16px;
+  }
+
+  .tslider-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .testimonials-wrap {
+    gap: 28px !important;
+  }
+
+  .testimonials-head {
+    gap: 10px !important;
+  }
+
+  .testimonials-head h2 {
+    font-size: 24px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tslider-track {
+    transition: none;
+  }
+}
+
+/* ── Footer — mobile: Issues + Services on the same line ───────── */
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 28px 20px !important;
+  }
+
+  /* Brand block spans the full width (its own row). */
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  /* Issues + Services sit side by side on one line. */
+  .footer-col-issues,
+  .footer-col-services {
+    grid-column: auto;
+  }
+
+  /* Contact block spans the full width below. */
+  .footer-col-contact {
+    grid-column: 1 / -1;
+  }
+
+  .footer-col h4,
+  .footer-col-issues h4,
+  .footer-col-services h4 {
+    font-size: 15px !important;
+  }
+}
+
+/* ── Footer bottom line — mobile: centered & compact ──────────── */
+@media (max-width: 640px) {
+  .footer-inner {
+    gap: 30px !important;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 18px !important;
+    gap: 6px !important;
+    font-size: 12.5px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   QUOTE MODAL (Get a Quote popup)
+   ══════════════════════════════════════════════════════════════ */
+.quote-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(6, 26, 48, 0.62);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  animation: quote-fade 0.2s ease;
+}
+
+@keyframes quote-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes quote-pop {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.quote-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 30px 80px -20px rgba(6, 26, 48, 0.6);
+  animation: quote-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  box-sizing: border-box;
+}
+
+.quote-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: #EEF5FA;
+  color: #0A2540;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  z-index: 2;
+}
+
+.quote-close:hover {
+  background: #DCEAF5;
+  transform: rotate(90deg);
+}
+
+.quote-dialog-head {
+  margin-bottom: 18px;
+  padding-right: 40px;
+}
+
+.quote-dialog-title {
+  margin: 0 0 4px;
+  font-family: "'Archivo', sans-serif";
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.15;
+  color: #0A2540;
+}
+
+.quote-dialog-sub {
+  margin: 0;
+  font-size: 14px;
+  color: #5A6B7D;
+}
+
+@media (max-width: 640px) {
+  .quote-overlay {
+    padding: 12px;
+    align-items: center;
+  }
+
+  .quote-dialog {
+    padding: 20px;
+    border-radius: 14px;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+
+  .quote-dialog-title {
+    font-size: 20px;
+  }
+
+  .quote-dialog-sub {
+    font-size: 13px;
+  }
+
+  .quote-dialog-head {
+    margin-bottom: 14px;
+    padding-right: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-overlay,
+  .quote-dialog {
+    animation: none;
+  }
+
+  .quote-close:hover {
+    transform: none;
+  }
+}
+
+/* ── CTA / Doorstep button rows — mobile: 2 buttons on one line ── */
+/* The short call label is hidden by default (desktop shows full). */
+.cta-call-short {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .cta-actions,
+  .doorstep-actions {
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    align-items: stretch;
+  }
+
+  /* Both buttons share the row equally. */
+  .cta-actions > *,
+  .doorstep-actions > * {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 46px !important;
+    padding: 0 10px !important;
+    font-size: 14px !important;
+    white-space: nowrap;
+    justify-content: center !important;
+  }
+
+  /* Swap the long phone label for a short one on small screens. */
+  .cta-call-full {
+    display: none;
+  }
+
+  .cta-call-short {
+    display: inline;
+  }
+
+  /* Slightly tighter icon spacing so text fits. */
+  .cta-actions .cta-call-btn,
+  .doorstep-actions .btn {
+    gap: 6px !important;
+  }
+}
+
+/* ── Hero background overlay ─────────────────────────────────────
+   Sits over the banner image, dark enough for white text to stay
+   readable while letting the photo show through. */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 37, 64, 0.92) 0%,
+    rgba(10, 37, 64, 0.82) 45%,
+    rgba(10, 37, 64, 0.68) 100%
+  );
+}
+
+@media (max-width: 860px) {
+  /* Stronger, more uniform overlay on mobile for contrast. */
+  .hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(10, 37, 64, 0.9) 0%,
+      rgba(10, 37, 64, 0.86) 100%
+    );
+  }
+}
