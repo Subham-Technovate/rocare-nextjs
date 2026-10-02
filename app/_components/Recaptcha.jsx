@@ -31,23 +31,44 @@ export default function Recaptcha({ onToken, resetSignal = 0 }) {
     if (!scriptReady || !siteKey || !containerRef.current) return;
     if (typeof window === 'undefined' || !window.grecaptcha) return;
 
-    // Avoid double-rendering the same container.
-    if (widgetIdRef.current !== null) return;
+    const renderWidget = () => {
+      const grecaptcha = window.grecaptcha;
+      if (
+        !containerRef.current ||
+        typeof grecaptcha?.render !== 'function' ||
+        widgetIdRef.current !== null
+      ) {
+        return;
+      }
 
-    widgetIdRef.current = window.grecaptcha.render(containerRef.current, {
-      sitekey: siteKey,
-      callback: (token) => {
-        if (onToken) onToken(token);
-      },
-      'expired-callback': handleExpired,
-      'error-callback': handleExpired,
-    });
+      widgetIdRef.current = grecaptcha.render(containerRef.current, {
+        sitekey: siteKey,
+        callback: (token) => {
+          if (onToken) onToken(token);
+        },
+        'expired-callback': handleExpired,
+        'error-callback': handleExpired,
+      });
+    };
+
+    if (typeof window.grecaptcha.ready === 'function') {
+      window.grecaptcha.ready(renderWidget);
+    } else {
+      renderWidget();
+    }
   }, [scriptReady, siteKey, onToken, handleExpired]);
 
   // Reset the widget whenever the reset signal changes.
   useEffect(() => {
-    if (!scriptReady || widgetIdRef.current === null || !window.grecaptcha) return;
-    window.grecaptcha.reset(widgetIdRef.current);
+    const grecaptcha = window.grecaptcha;
+    if (
+      !scriptReady ||
+      widgetIdRef.current === null ||
+      typeof grecaptcha?.reset !== 'function'
+    ) {
+      return;
+    }
+    grecaptcha.reset(widgetIdRef.current);
   }, [resetSignal, scriptReady]);
 
   if (!siteKey) {
