@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server';
-import { getTransporter, getAdminEmail, getFromAddress } from '@/app/lib/mailer';
+import { getTransporter, getAdminEmail, getAdminCcEmail, getFromAddress } from '@/app/lib/mailer';
 import { buildLeadEmail } from '@/app/lib/emailTemplates';
+import { verifyRecaptcha } from '@/app/lib/recaptcha';
 
 /**
  * POST /api/contact
  * Accepts lead form submissions from the hero section / quote modal.
  *
- * Validates the payload, then delivers it to the admin inbox over SMTP
- * (Gmail by default). SMTP settings come from .env.local — see mailer.js.
+ * Validates the payload and verifies the Google reCAPTCHA token, then
+ * delivers it to the admin inbox over SMTP (Gmail by default). SMTP
+ * settings come from .env.local — see mailer.js and recaptcha.js.
  */
 export const runtime = 'nodejs';
 
 const REQUIRED = ['name', 'email', 'phone', 'location'];
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^[+()\-\s\d]{7,20}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+// Accepts an optional +91 / 0 prefix followed by exactly 10 Indian digits.
+const PHONE_RE = /^(?:\+91|91|0)?[6-9]\d{9}$/;
 
 function clean(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -49,7 +52,23 @@ export async function POST(request) {
   }
 
   if (!PHONE_RE.test(data.phone)) {
-    return NextResponse.json({ error: 'Please enter a valid phone number.' }, { status: 422 });
+    return NextResponse.json(
+      { error: 'Please enter a valid 10-digit Indian mobile number.' },
+      { status: 422 }
+    );
+  }
+
+  // Verify the Google reCAPTCHA token before doing anything else.
+  const captchaToken = clean(payload.recaptchaToken);
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : undefined;
+  const captchaOk = await verifyRecaptcha(captchaToken, clientIp);
+
+  if (!captchaOk) {
+    return NextResponse.json(
+      { error: 'Captcha verification failed. Please try again.' },
+      { status: 422 }
+    );
   }
 
   const record = {
@@ -60,9 +79,12 @@ export async function POST(request) {
   try {
     const { subject, text, html } = buildLeadEmail(record);
 
+    const cc = getAdminCcEmail();
+
     await getTransporter().sendMail({
       from: getFromAddress(),
       to: getAdminEmail(),
+      ...(cc ? { cc } : {}),
       replyTo: data.email,
       subject,
       text,
@@ -72,6 +94,7 @@ export async function POST(request) {
     console.log('[contact] lead emailed to admin:', {
       name: data.name,
       email: data.email,
+      cc: cc || null,
       receivedAt: record.receivedAt,
     });
 

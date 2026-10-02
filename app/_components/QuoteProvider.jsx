@@ -6,12 +6,12 @@ import QuoteModal from './QuoteModal';
 const QuoteContext = createContext(null);
 
 /**
- * QuoteProvider — makes the "Get a Quote" popup available anywhere in the
- * tree. Mounted once in the root layout so every CTA shares one modal.
+ * QuoteProvider — makes the callback-request popup available anywhere in
+ * the tree. Mounted once in the root layout so every CTA shares one modal.
  *
  * Usage in a client component:
  *   const { openQuote } = useQuote();
- *   <button onClick={openQuote}>Get a Quote</button>
+ *   <button onClick={openQuote}>Request a Callback</button>
  */
 export function QuoteProvider({ children }) {
   const [open, setOpen] = useState(false);

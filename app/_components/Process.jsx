@@ -48,7 +48,7 @@ export default function Process() {
               Booking a repair is simple. Three steps and your purifier is running again.
             </p>
           </div>
-          <QuoteButton variant="blue">Get a Quote</QuoteButton>
+          <QuoteButton variant="blue">Request a Callback</QuoteButton>
         </div>
 
         <div

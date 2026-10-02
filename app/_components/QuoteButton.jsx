@@ -4,16 +4,16 @@ import { FaArrowRight } from 'react-icons/fa';
 import { useQuote } from './QuoteProvider';
 
 /**
- * QuoteButton — a CTA button that opens the "Get a Quote" popup.
+ * QuoteButton — a CTA button that opens the callback-request popup.
  *
  * Props:
- *  - children : button label (default "Get a Quote")
+ *  - children : button label (default "Request a Callback")
  *  - variant  : 'solid' (amber, default) | 'blue' | 'ghost' | 'ghost-light'
  *  - style    : extra inline styles merged over the base
  *  - withArrow: show a trailing arrow icon
  */
 export default function QuoteButton({
-  children = 'Get a Quote',
+  children = 'Request a Callback',
   variant = 'solid',
   withArrow = false,
   style,

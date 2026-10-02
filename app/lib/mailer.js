@@ -64,6 +64,15 @@ export function getAdminEmail() {
   return requiredEnv('ADMIN_EMAIL');
 }
 
+/**
+ * Optional CC recipient(s) for lead notifications. Returns a
+ * comma-separated string (or empty string when unset) suitable for
+ * nodemailer's `cc` field.
+ */
+export function getAdminCcEmail() {
+  return (process.env.ADMIN_CC_EMAIL || '').trim();
+}
+
 export function getFromAddress() {
   const user = requiredEnv('SMTP_USER');
   const name = process.env.SMTP_FROM_NAME || 'Website';

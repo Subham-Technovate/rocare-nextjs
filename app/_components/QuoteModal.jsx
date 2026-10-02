@@ -102,12 +102,7 @@ export default function QuoteModal({ open, onClose }) {
           </p>
         </div>
 
-        <HeroForm
-          embedded
-          title="Request a Quote"
-          subtitle="No hidden fees. We&rsquo;ll confirm the exact cost before any work starts."
-          onSuccess={onClose}
-        />
+        <HeroForm embedded title="" subtitle="" onSuccess={onClose} />
       </div>
     </div>
   );
