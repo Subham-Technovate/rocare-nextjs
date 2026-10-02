@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
+import { getTransporter, getAdminEmail, getFromAddress } from '@/app/lib/mailer';
+import { buildLeadEmail } from '@/app/lib/emailTemplates';
 
 /**
  * POST /api/contact
- * Accepts lead form submissions from the hero section.
+ * Accepts lead form submissions from the hero section / quote modal.
  *
- * Validates the payload, then (in the absence of a configured mail/CRM
- * provider) logs the lead and returns success. Wire a real transport here
- * — e.g. Resend, SendGrid, Nodemailer, or a CRM webhook — by reading the
- * relevant env vars.
+ * Validates the payload, then delivers it to the admin inbox over SMTP
+ * (Gmail by default). SMTP settings come from .env.local — see mailer.js.
  */
+export const runtime = 'nodejs';
+
 const REQUIRED = ['name', 'email', 'phone', 'location'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+()\-\s\d]{7,20}$/;
@@ -50,26 +52,32 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Please enter a valid phone number.' }, { status: 422 });
   }
 
+  const record = {
+    ...data,
+    receivedAt: new Date().toISOString(),
+  };
+
   try {
-    // ── Delivery ──────────────────────────────────────────────────────────
-    // No email provider is configured yet, so we log the lead server-side.
-    // Replace this block with your transport of choice, e.g.:
-    //
-    //   await resend.emails.send({
-    //     from: 'website@rocarcodisha.in',
-    //     to: process.env.LEAD_INBOX,
-    //     subject: `New lead: ${data.name}`,
-    //     text: JSON.stringify(data),
-    //   });
-    //
-    console.log('[contact] new lead:', {
-      ...data,
-      receivedAt: new Date().toISOString(),
+    const { subject, text, html } = buildLeadEmail(record);
+
+    await getTransporter().sendMail({
+      from: getFromAddress(),
+      to: getAdminEmail(),
+      replyTo: data.email,
+      subject,
+      text,
+      html,
+    });
+
+    console.log('[contact] lead emailed to admin:', {
+      name: data.name,
+      email: data.email,
+      receivedAt: record.receivedAt,
     });
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (err) {
-    console.error('[contact] failed to process lead:', err);
+    console.error('[contact] failed to send lead email:', err);
     return NextResponse.json(
       { error: 'We could not submit your request. Please call us instead.' },
       { status: 500 }

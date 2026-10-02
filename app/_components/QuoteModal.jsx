@@ -106,6 +106,7 @@ export default function QuoteModal({ open, onClose }) {
           embedded
           title="Request a Quote"
           subtitle="No hidden fees. We&rsquo;ll confirm the exact cost before any work starts."
+          onSuccess={onClose}
         />
       </div>
     </div>

@@ -13,7 +13,10 @@ const NAV_LINKS = [
 
 export default function Header() {
   return (
-    <header style={{ background: '#FFFFFF', borderBottom: '1px solid #E3ECF4' }}>
+    <header
+      className="sticky-header"
+      style={{ background: '#FFFFFF', borderBottom: '1px solid #E3ECF4' }}
+    >
       <div
         className="header-inner container-pad"
         style={{

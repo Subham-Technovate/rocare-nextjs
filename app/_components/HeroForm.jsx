@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import { FaSpinner } from 'react-icons/fa';
 
 const INITIAL = {
   name: '',
@@ -15,15 +16,16 @@ const INITIAL = {
  * HeroForm — compact lead-capture form.
  * Collects name, email, phone, location and message.
  *
- * Posts to /api/contact. On success shows a confirmation; on failure shows
- * an error and keeps the user\'s input so nothing is lost.
+ * Posts to /api/contact. On success it redirects the user to /thank-you.
+ * On failure it shows an error and keeps the user's input so nothing is lost.
  *
  * Props:
  *  - title     : heading shown above the fields
  *  - subtitle  : small helper line under the heading
  *  - embedded  : when true, drops the card shadow/background (used inside
  *                the quote modal, which supplies its own container)
- *  - onSuccess : optional callback fired after a successful submit
+ *  - onSuccess : optional callback fired right before the thank-you redirect
+ *                (e.g. to close the quote modal so it doesn't stay on screen)
  */
 export default function HeroForm({
   title = 'Book a Technician',
@@ -31,8 +33,9 @@ export default function HeroForm({
   embedded = false,
   onSuccess,
 }) {
+  const router = useRouter();
   const [values, setValues] = useState(INITIAL);
-  const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+  const [status, setStatus] = useState('idle'); // idle | submitting | error
   const [errorMsg, setErrorMsg] = useState('');
 
   function handleChange(e) {
@@ -60,9 +63,9 @@ export default function HeroForm({
         throw new Error(data?.error || 'Something went wrong. Please try again.');
       }
 
-      setStatus('success');
       setValues(INITIAL);
       if (typeof onSuccess === 'function') onSuccess();
+      router.push('/thank-you');
     } catch (err) {
       setStatus('error');
       setErrorMsg(err?.message || 'Something went wrong. Please try again.');
@@ -90,51 +93,6 @@ export default function HeroForm({
     color: '#0A2540',
     marginBottom: '6px',
   };
-
-  if (status === 'success') {
-    return (
-      <div
-        style={{
-          background: '#FFFFFF',
-          borderRadius: '18px',
-          padding: embedded ? '24px 8px' : '40px 32px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          gap: '14px',
-          boxShadow: embedded ? 'none' : '0 24px 60px rgba(6,26,48,0.35)',
-        }}
-      >
-        <FaCheckCircle size={52} color="#0B63B6" aria-hidden="true" />
-        <h3 style={{ margin: 0, fontFamily: "'Archivo', sans-serif", fontSize: '24px', color: '#0A2540' }}>
-          Request received!
-        </h3>
-        <p style={{ margin: 0, color: '#5A6B7D' }}>
-          Thanks — our team will call you shortly to confirm your booking.
-        </p>
-        <button
-          type="button"
-          className="btn"
-          onClick={() => setStatus('idle')}
-          style={{
-            marginTop: '8px',
-            minHeight: '48px',
-            padding: '0 24px',
-            borderRadius: '8px',
-            border: 'none',
-            background: '#0B63B6',
-            color: '#FFFFFF',
-            fontWeight: 700,
-            fontSize: '15px',
-            cursor: 'pointer',
-          }}
-        >
-          Book another
-        </button>
-      </div>
-    );
-  }
 
   return (
     <form
