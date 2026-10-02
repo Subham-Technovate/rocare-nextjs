@@ -84,7 +84,7 @@ export default function Recaptcha({ onToken, resetSignal = 0 }) {
       <Script
         src="https://www.google.com/recaptcha/api.js?render=explicit"
         strategy="afterInteractive"
-        onLoad={() => setScriptReady(true)}
+        onReady={() => setScriptReady(true)}
         onError={() => setScriptReady(false)}
       />
       <div ref={containerRef} />
