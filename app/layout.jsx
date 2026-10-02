@@ -1,20 +1,9 @@
-import { Archivo, DM_Sans } from 'next/font/google';
 import './globals.css';
 import { QuoteProvider } from './_components/QuoteProvider';
 
-const archivo = Archivo({
-  subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-archivo',
-  display: 'swap',
-});
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-dm-sans',
-  display: 'swap',
-});
+// Fonts are self-hosted and declared via @font-face in globals.css
+// (files live in app/fonts). This keeps the build fully offline and
+// avoids any dependency on Google Fonts at build or runtime.
 
 export const metadata = {
   title: 'RO Care Odisha – RO Repair Bhubaneswar, Cuttack & Puri',
@@ -29,7 +18,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${archivo.variable} ${dmSans.variable}`}>
+    <html lang="en">
       <body>
         <QuoteProvider>{children}</QuoteProvider>
       </body>
