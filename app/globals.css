@@ -484,6 +484,13 @@ blockquote {
     gap: 12px !important;
   }
 
+  .header-inner > .btn {
+    min-height: 40px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
+
   /* Nav links are hidden on mobile; the top bar + CTA remain. */
   .header-nav {
     display: none !important;
